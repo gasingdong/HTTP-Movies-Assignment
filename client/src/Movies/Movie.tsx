@@ -38,6 +38,19 @@ const Movie = ({
     }
   };
 
+  const deleteMovie = async (): Promise<void> => {
+    if (movie) {
+      try {
+        await axios.delete(
+          `http://localhost:5000/api/movies/${match.params.id}`
+        );
+        history.push('/');
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
+
   useEffect((): void => {
     if (match.params.id) {
       fetchMovie(match.params.id);
@@ -52,6 +65,9 @@ const Movie = ({
       </button>
       <button type="button" className="edit-button" onClick={editMovie}>
         Edit
+      </button>
+      <button type="button" className="delete-button" onClick={deleteMovie}>
+        Delete
       </button>
     </div>
   ) : (
