@@ -14,6 +14,7 @@ interface MovieProps {
 
 const Movie = ({
   match,
+  history,
   addToSavedList,
 }: MovieProps & RouteComponentProps<RouteProps>): React.ReactElement => {
   const [movie, setMovie] = useState<MovieData | null>(null);
@@ -31,6 +32,12 @@ const Movie = ({
     }
   };
 
+  const editMovie = (): void => {
+    if (movie) {
+      history.push(`/update-movie/${movie.id}`);
+    }
+  };
+
   useEffect((): void => {
     if (match.params.id) {
       fetchMovie(match.params.id);
@@ -42,6 +49,9 @@ const Movie = ({
       <MovieCard movie={movie} />
       <button type="button" className="save-button" onClick={saveMovie}>
         Save
+      </button>
+      <button type="button" className="edit-button" onClick={editMovie}>
+        Edit
       </button>
     </div>
   ) : (
