@@ -16,6 +16,7 @@ interface MovieFormData {
 
 const UpdateMovie = ({
   match,
+  history,
 }: RouteComponentProps<RouteProps>): React.ReactElement => {
   const [movie, setMovie] = useState<MovieData | null>(null);
   const [newMovie, setNewMovie] = useState<MovieFormData>({
@@ -40,7 +41,24 @@ const UpdateMovie = ({
       ...newMovie,
       [event.target.name]: event.target.value,
     });
-    console.log(newMovie);
+  };
+
+  const submitHandler = async (
+    event: React.FormEvent<HTMLFormElement>
+  ): Promise<void> => {
+    event.preventDefault();
+    try {
+      await axios.put(`http://localhost:5000/api/movies/${match.params.id}`, {
+        id: match.params.id,
+        title: newMovie.title,
+        director: newMovie.director,
+        metascore: Number(newMovie.metascore),
+        stars: newMovie.stars,
+      });
+      history.push('/');
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   useEffect((): void => {
@@ -51,7 +69,7 @@ const UpdateMovie = ({
 
   return movie && newMovie ? (
     <div className="update-movie">
-      <form>
+      <form onSubmit={submitHandler}>
         <label htmlFor="title">
           Title
           <input
@@ -92,6 +110,7 @@ const UpdateMovie = ({
             onChange={changeHandler}
           />
         </label>
+        <button type="submit">Save Changes</button>
       </form>
     </div>
   ) : (
