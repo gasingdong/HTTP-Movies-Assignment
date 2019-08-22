@@ -2,16 +2,10 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { RouteComponentProps } from 'react-router-dom';
 import { MovieData } from '../types';
+import useMovieForm from '../hooks/useMovieForm';
 
 interface RouteProps {
   id: string | undefined;
-}
-
-interface MovieFormData {
-  title: string;
-  director: string;
-  metascore: string;
-  stars: string;
 }
 
 const UpdateMovie = ({
@@ -19,28 +13,16 @@ const UpdateMovie = ({
   history,
 }: RouteComponentProps<RouteProps>): React.ReactElement => {
   const [movie, setMovie] = useState<MovieData | null>(null);
-  const [newMovie, setNewMovie] = useState<MovieFormData>({
-    title: '',
-    director: '',
-    metascore: '',
-    stars: '',
-  });
+  const [movieForm, setMovieForm, changeHandler] = useMovieForm();
 
   const fetchMovie = (id: string): void => {
     axios
       .get(`http://localhost:5000/api/movies/${id}`)
       .then((res): void => {
         setMovie(res.data);
-        setNewMovie(res.data);
+        setMovieForm(res.data);
       })
       .catch((err): void => console.log(err.response));
-  };
-
-  const changeHandler = (event: React.ChangeEvent<HTMLInputElement>): void => {
-    setNewMovie({
-      ...newMovie,
-      [event.target.name]: event.target.value,
-    });
   };
 
   const submitHandler = async (
@@ -50,10 +32,10 @@ const UpdateMovie = ({
     try {
       await axios.put(`http://localhost:5000/api/movies/${match.params.id}`, {
         id: match.params.id,
-        title: newMovie.title,
-        director: newMovie.director,
-        metascore: Number(newMovie.metascore),
-        stars: newMovie.stars,
+        title: movieForm.title,
+        director: movieForm.director,
+        metascore: Number(movieForm.metascore),
+        stars: movieForm.stars,
       });
       history.push('/');
     } catch (error) {
@@ -67,7 +49,7 @@ const UpdateMovie = ({
     }
   }, [match.params.id]);
 
-  return movie && newMovie ? (
+  return movie && movieForm ? (
     <div className="update-movie">
       <form onSubmit={submitHandler}>
         <label htmlFor="title">
@@ -76,7 +58,7 @@ const UpdateMovie = ({
             type="text"
             name="title"
             placeholder="Title"
-            value={newMovie.title}
+            value={movieForm.title}
             onChange={changeHandler}
           />
         </label>
@@ -86,7 +68,7 @@ const UpdateMovie = ({
             type="text"
             name="director"
             placeholder="Director"
-            value={newMovie.director}
+            value={movieForm.director}
             onChange={changeHandler}
           />
         </label>
@@ -96,7 +78,7 @@ const UpdateMovie = ({
             type="text"
             name="metascore"
             placeholder="Metascore"
-            value={newMovie.metascore}
+            value={movieForm.metascore}
             onChange={changeHandler}
           />
         </label>
@@ -106,7 +88,7 @@ const UpdateMovie = ({
             type="text"
             name="stars"
             placeholder="stars"
-            value={newMovie.stars}
+            value={movieForm.stars}
             onChange={changeHandler}
           />
         </label>
