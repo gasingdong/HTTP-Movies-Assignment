@@ -1,31 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import axios from 'axios';
 import { RouteComponentProps } from 'react-router-dom';
-import { MovieData } from '../types';
 import useMovieForm from '../hooks/useMovieForm';
 
-interface RouteProps {
-  id: string | undefined;
-}
-
-const UpdateMovie = ({
-  match,
-  history,
-}: RouteComponentProps<RouteProps>): React.ReactElement => {
-  const [movie, setMovie] = useState<MovieData | null>(null);
-  const [movieForm, setMovieForm, changeHandler] = useMovieForm();
+const AddMovie = ({ history }: RouteComponentProps): React.ReactElement => {
+  const [movieForm, , changeHandler] = useMovieForm();
 
   const submitHandler = async (
     event: React.FormEvent<HTMLFormElement>
   ): Promise<void> => {
     event.preventDefault();
     try {
-      await axios.put(`http://localhost:5000/api/movies/${match.params.id}`, {
-        id: match.params.id,
+      await axios.post(`http://localhost:5000/api/movies`, {
+        id: Date.now(),
         title: movieForm.title,
         director: movieForm.director,
         metascore: Number(movieForm.metascore),
-        stars: movieForm.stars,
+        stars: movieForm.stars.split(','),
       });
       history.push('/');
     } catch (error) {
@@ -33,19 +24,7 @@ const UpdateMovie = ({
     }
   };
 
-  useEffect((): void => {
-    if (match.params.id) {
-      axios
-        .get(`http://localhost:5000/api/movies/${match.params.id}`)
-        .then((res): void => {
-          setMovie(res.data);
-          setMovieForm(res.data);
-        })
-        .catch((err): void => console.log(err.response));
-    }
-  }, [match.params.id, setMovieForm]);
-
-  return movie && movieForm ? (
+  return (
     <div className="update-movie">
       <form onSubmit={submitHandler}>
         <label htmlFor="title">
@@ -91,9 +70,7 @@ const UpdateMovie = ({
         <button type="submit">Save Changes</button>
       </form>
     </div>
-  ) : (
-    <div>Loading movie information...</div>
   );
 };
 
-export default UpdateMovie;
+export default AddMovie;

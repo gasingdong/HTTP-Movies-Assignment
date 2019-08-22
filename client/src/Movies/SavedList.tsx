@@ -26,6 +26,9 @@ const SavedList = ({ list }: SavedListProps): React.ReactElement => {
       <div className="home-button">
         <Link to="/">Home</Link>
       </div>
+      <div className="add-button">
+        <Link to="/add-movie">Add Movie</Link>
+      </div>
     </div>
   );
 };

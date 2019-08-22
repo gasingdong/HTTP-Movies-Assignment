@@ -5,6 +5,7 @@ import MovieList from './Movies/MovieList';
 import Movie from './Movies/Movie';
 import { MovieData } from './types';
 import UpdateMovie from './Movies/UpdateMovie';
+import AddMovie from './Movies/AddMovie';
 
 const App = (): React.ReactElement => {
   const [savedList, setSavedList] = useState<MovieData[]>([]);
@@ -29,6 +30,7 @@ const App = (): React.ReactElement => {
           return <UpdateMovie {...props} />;
         }}
       />
+      <Route path="/add-movie" component={AddMovie} />
     </>
   );
 };
