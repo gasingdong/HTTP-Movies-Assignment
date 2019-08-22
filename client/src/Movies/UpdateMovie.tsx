@@ -7,16 +7,40 @@ interface RouteProps {
   id: string | undefined;
 }
 
+interface MovieFormData {
+  title: string;
+  director: string;
+  metascore: string;
+  stars: string;
+}
+
 const UpdateMovie = ({
   match,
 }: RouteComponentProps<RouteProps>): React.ReactElement => {
   const [movie, setMovie] = useState<MovieData | null>(null);
+  const [newMovie, setNewMovie] = useState<MovieFormData>({
+    title: '',
+    director: '',
+    metascore: '',
+    stars: '',
+  });
 
   const fetchMovie = (id: string): void => {
     axios
       .get(`http://localhost:5000/api/movies/${id}`)
-      .then((res): void => setMovie(res.data))
+      .then((res): void => {
+        setMovie(res.data);
+        setNewMovie(res.data);
+      })
       .catch((err): void => console.log(err.response));
+  };
+
+  const changeHandler = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    setNewMovie({
+      ...newMovie,
+      [event.target.name]: event.target.value,
+    });
+    console.log(newMovie);
   };
 
   useEffect((): void => {
@@ -25,7 +49,7 @@ const UpdateMovie = ({
     }
   }, [match.params.id]);
 
-  return movie ? (
+  return movie && newMovie ? (
     <div className="update-movie">
       <form>
         <label htmlFor="title">
@@ -34,7 +58,38 @@ const UpdateMovie = ({
             type="text"
             name="title"
             placeholder="Title"
-            defaultValue={movie.title}
+            value={newMovie.title}
+            onChange={changeHandler}
+          />
+        </label>
+        <label htmlFor="director">
+          Director
+          <input
+            type="text"
+            name="director"
+            placeholder="Director"
+            value={newMovie.director}
+            onChange={changeHandler}
+          />
+        </label>
+        <label htmlFor="metascore">
+          Metascore
+          <input
+            type="text"
+            name="metascore"
+            placeholder="Metascore"
+            value={newMovie.metascore}
+            onChange={changeHandler}
+          />
+        </label>
+        <label htmlFor="stars">
+          Stars
+          <input
+            type="text"
+            name="stars"
+            placeholder="stars"
+            value={newMovie.stars}
+            onChange={changeHandler}
           />
         </label>
       </form>
